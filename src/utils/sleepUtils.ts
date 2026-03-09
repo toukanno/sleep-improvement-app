@@ -2,11 +2,21 @@ import { SleepRecord, SleepStats } from '../types/sleep';
 
 const STORAGE_KEY = 'sleep_records';
 
+function compareRecordDesc(a: SleepRecord, b: SleepRecord): number {
+  const aKey = `${a.date}T${a.bedTime}`;
+  const bKey = `${b.date}T${b.bedTime}`;
+  return bKey.localeCompare(aKey);
+}
+
+export function sortRecords(records: SleepRecord[]): SleepRecord[] {
+  return [...records].sort(compareRecordDesc);
+}
+
 export function loadRecords(): SleepRecord[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as SleepRecord[];
+    return sortRecords(JSON.parse(raw) as SleepRecord[]);
   } catch {
     return [];
   }
@@ -18,7 +28,7 @@ export function saveRecords(records: SleepRecord[]): void {
 
 export function addRecord(record: SleepRecord): SleepRecord[] {
   const records = loadRecords();
-  const updated = [record, ...records];
+  const updated = sortRecords([record, ...records]);
   saveRecords(updated);
   return updated;
 }
@@ -30,7 +40,7 @@ export function deleteRecord(id: string): SleepRecord[] {
 }
 
 export function updateRecord(updated: SleepRecord): SleepRecord[] {
-  const records = loadRecords().map((r) => (r.id === updated.id ? updated : r));
+  const records = sortRecords(loadRecords().map((r) => (r.id === updated.id ? updated : r)));
   saveRecords(records);
   return records;
 }
