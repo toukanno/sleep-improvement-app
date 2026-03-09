@@ -1,6 +1,6 @@
 import React from 'react';
 import { SleepRecord, SleepStats } from '../types/sleep';
-import { formatDuration, qualityColor, qualityLabel } from '../utils/sleepUtils';
+import { calcDuration, formatDuration, qualityColor, qualityLabel } from '../utils/sleepUtils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './Dashboard.module.css';
 
@@ -16,12 +16,7 @@ export const Dashboard: React.FC<Props> = ({ records, stats, onNavigateRecord })
     .slice(0, 7)
     .reverse()
     .map((r) => {
-      const bh = Number(r.bedTime.split(':')[0]);
-      const bm = Number(r.bedTime.split(':')[1]);
-      const wh = Number(r.wakeTime.split(':')[0]);
-      const wm = Number(r.wakeTime.split(':')[1]);
-      let dur = (wh * 60 + wm) - (bh * 60 + bm);
-      if (dur < 0) dur += 24 * 60;
+      const dur = calcDuration(r.bedTime, r.wakeTime);
       return {
         date: r.date.slice(5), // MM-DD
         duration: Math.round(dur / 6) / 10, // hours
@@ -44,17 +39,7 @@ export const Dashboard: React.FC<Props> = ({ records, stats, onNavigateRecord })
           <div className={styles.latestRow}>
             <div className={styles.latestItem}>
               <span className={styles.latestValue}>
-                {formatDuration(
-                  (() => {
-                    const bh = Number(latest.bedTime.split(':')[0]);
-                    const bm = Number(latest.bedTime.split(':')[1]);
-                    const wh = Number(latest.wakeTime.split(':')[0]);
-                    const wm = Number(latest.wakeTime.split(':')[1]);
-                    let d = (wh * 60 + wm) - (bh * 60 + bm);
-                    if (d < 0) d += 24 * 60;
-                    return d;
-                  })()
-                )}
+                {formatDuration(calcDuration(latest.bedTime, latest.wakeTime))}
               </span>
               <span className={styles.latestUnit}>睡眠時間</span>
             </div>

@@ -6,9 +6,10 @@ import styles from './History.module.css';
 interface Props {
   records: SleepRecord[];
   onDelete: (id: string) => void;
+  onEdit: (record: SleepRecord) => void;
 }
 
-export const History: React.FC<Props> = ({ records, onDelete }) => {
+export const History: React.FC<Props> = ({ records, onDelete, onEdit }) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const handleDelete = (id: string) => {
@@ -62,12 +63,17 @@ export const History: React.FC<Props> = ({ records, onDelete }) => {
                   </div>
                 )}
                 {r.notes && <p className={styles.notes}>{r.notes}</p>}
-                <button
-                  className={`${styles.deleteBtn} ${confirmId === r.id ? styles.confirm : ''}`}
-                  onClick={() => handleDelete(r.id)}
-                >
-                  {confirmId === r.id ? 'もう一度押すと削除' : '削除'}
-                </button>
+                <div className={styles.actions}>
+                  <button className={styles.editBtn} onClick={() => onEdit(r)}>
+                    編集
+                  </button>
+                  <button
+                    className={`${styles.deleteBtn} ${confirmId === r.id ? styles.confirm : ''}`}
+                    onClick={() => handleDelete(r.id)}
+                  >
+                    {confirmId === r.id ? 'もう一度押すと削除' : '削除'}
+                  </button>
+                </div>
               </li>
             );
           })}
