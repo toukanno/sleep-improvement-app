@@ -95,7 +95,7 @@ export function calcStats(records: SleepRecord[]): SleepStats {
   // 今日から遡って連続チェック
   const todayStr = new Date().toISOString().slice(0, 10);
   const dateSet = new Set(dates);
-  let checkDate = new Date(todayStr);
+  const checkDate = new Date(todayStr);
   while (dateSet.has(checkDate.toISOString().slice(0, 10))) {
     currentStreak++;
     checkDate.setDate(checkDate.getDate() - 1);
